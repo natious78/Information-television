@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const response = await fetch(API_URL);
       const data = await response.json();
       // Build the text using m1, m2, and poet properties
-      return `${data.m1}//////${data.m2}//////${data.poet}`;
+      return `${data.m1}***${data.m2}${data.poet}   ||`;
     } catch (error) {
       console.error("Error fetching text:", error);
       return "Error fetching text";
@@ -189,9 +189,125 @@ document.addEventListener("DOMContentLoaded", function () {
   function updateTime() {
     const timeElement = document.getElementById("current-time");
     const now = new Date();
-    const timeString = now.toLocaleTimeString(); 
+    const timeString = now.toLocaleTimeString();
     timeElement.textContent = timeString;
   }
   updateTime();
   setInterval(updateTime, 1000);
+
+  //   events
+  async function fetchAndDisplayHolidays(year, month, day) {
+    const eventsDiv = document.querySelector(".content__events");
+
+    try {
+      const response = await fetch(
+        `https://corsproxy.io/https://holidayapi.ir/gregorian/${year}/${month}/${day}`
+      );
+      const data = await response.json();
+      console.log(data);
+
+      if (data && data.events && data.events.length > 0) {
+        const events = data.events;
+        let eventsListHTML = "<h2>مناسبت ها:</h2><ul>";
+
+        events.forEach((event) => {
+          let description = event.description;
+          if (event.is_holiday) {
+            description = `<span style="color: red;">${description}</span>`;
+          }
+          eventsListHTML += `<li>${description}</li>`;
+        });
+
+        eventsListHTML += "</ul>";
+        eventsDiv.innerHTML = eventsListHTML;
+      } else {
+        eventsDiv.innerHTML = "<p>No events found for this date.</p>";
+      }
+    } catch (error) {
+      console.error("Error fetching events:", error);
+      eventsDiv.innerHTML = "<p>Error fetching event data.</p>";
+    }
+  }
+
+  const currentYear = new Date().getFullYear();
+  const currentMonth = new Date().getMonth() + 1;
+  const currentDay = new Date().getDate();
+
+  fetchAndDisplayHolidays(currentYear, currentMonth, currentDay);
+
+  //   frame
+  const folderPath = "../media"; // Folder where images and videos are stored
+  const frame = document.querySelector(".content__frame");
+
+  // List of supported media formats
+  const imageExtensions = ["jpg", "jpeg", "png", "gif", "webp"];
+  const videoExtensions = ["mp4", "webm", "ogg"];
+
+  // Fetch and display media
+  async function fetchMedia() {
+    try {
+      const response = await fetch(folderPath);
+      const data = await response.text();
+
+      // Extract filenames from the directory listing (requires server-side support)
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(data, "text/html");
+      const links = Array.from(doc.querySelectorAll("a"));
+      let mediaFiles = links
+        .map((link) => link.getAttribute("href"))
+        .filter((file) => isMedia(file));
+
+      if (mediaFiles.length === 0) {
+        console.error("No media files found in the folder.");
+        return;
+      }
+
+      displayMedia(mediaFiles);
+    } catch (error) {
+      console.error("Error fetching media:", error);
+    }
+  }
+
+  // Check if a file is an image or video
+  function isMedia(file) {
+    let ext = file.split(".").pop().toLowerCase();
+    return imageExtensions.includes(ext) || videoExtensions.includes(ext);
+  }
+
+  // Display media in sequence
+  async function displayMedia(mediaFiles) {
+    while (true) {
+      // Loop indefinitely
+      for (let file of mediaFiles) {
+        let ext = file.split(".").pop().toLowerCase();
+        let mediaPath = `${file}`;
+
+        if (imageExtensions.includes(ext)) {
+          await showImage(mediaPath);
+        } else if (videoExtensions.includes(ext)) {
+          await playVideo(mediaPath);
+        }
+      }
+    }
+  }
+
+  // Show an image for 8 seconds
+  function showImage(src) {
+    return new Promise((resolve) => {
+      frame.innerHTML = `<img src="${src}" style="width: 70rem; height: auto;">`;
+      setTimeout(resolve, 8000);
+    });
+  }
+
+  // Play a video until it finishes
+  function playVideo(src) {
+    return new Promise((resolve) => {
+      frame.innerHTML = `<video src="${src}" autoplay controls style="width: 70rem; height: auto;"></video>`;
+      const video = frame.querySelector("video");
+      video.onended = resolve;
+    });
+  }
+
+  // Start fetching and displaying media
+  fetchMedia();
 });
