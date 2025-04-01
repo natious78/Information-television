@@ -9,10 +9,12 @@
 html,
 body {
   font-family: "Noto Sans Arabic", sans-serif;
-  background-color: #1e223a;
+  background: linear-gradient(to bottom, #1d1d21, #1d2339);
   color: #fff;
   line-height: 1.6;
   scroll-behavior: smooth;
+  margin: 0;
+  min-height: 100vh;
 }
 
 a {
@@ -29,7 +31,7 @@ img {
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 100%;
   margin: 0 auto;
 }
 
@@ -43,42 +45,75 @@ img {
   top: 0;
   left: 0;
   right: 0;
-  overflow: hidden; /* Hide overflowing text */
-  white-space: nowrap; /* Ensure text stays on one line */
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .marquee-wrapper {
   display: inline-block;
-  /* The animation will move the content from right to left */
   animation: marquee 60s linear infinite;
 }
-/* Styling for each text item */
+
 .moving-text {
   display: inline-block;
-  padding-right: 5rem; /* Creates the gap between texts */
+  padding-right: 5rem;
 }
+
 /* navbar */
 
 .navbar {
+  margin-top: 5rem;
   display: grid;
-  grid-template-columns: repeat(3, 1fr 2fr 1fr);
+  grid-template-columns: 1fr 2fr 1fr;
   align-items: center;
   padding: 1rem;
+  gap: 1rem;
 }
 
 .navbar__weather,
-.navbar__time.navbar__date {
-  background-color: #1e223a;
+.navbar__time,
+.navbar__date {
+  background-color: #1d2339;
   border: 2px solid transparent;
   border-radius: 5px;
   padding: 1rem;
+  color: white;
+  text-align: center;
+  justify-content: center;
+  width: 30%;
+  align-items: center;
+  width: 100%;
+  min-height: 100%;
 }
 
+.navbar__weather {
+  font-size: 4rem;
+}
+
+.navbar__time{
+    font-size: 3rem;
+    align-items: center;
+    padding-top: 2rem;
+}
+
+.navbar__date {
+  font-size: 2rem;
+  align-items: center;
+  padding-top: 2.5rem;
+}
+
+.navbar__weather i {
+  display: inline-block;
+  margin-bottom: 0.5rem;
+  margin-right: 1.5rem;
+}
+
+/* keyframes */
 @keyframes marquee {
-    0% {
-      transform: translateX(100%);
-    }
-    100% {
-      transform: translateX(-100%);
-    }
+  0% {
+    transform: translateX(100%);
   }
+  100% {
+    transform: translateX(-100%);
+  }
+}

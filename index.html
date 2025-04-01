@@ -20,18 +20,31 @@
     <title>Information</title>
   </head>
   <body>
-    <section class="textbar" >
+    <!-- text bar -->
+    <section class="textbar">
       <div class="textbar__box" id="textbarBox"></div>
     </section>
+    <!-- navbar -->
     <section class="navbar container">
-      <div class="navbar__weather"></div>
-      <div class="navbar__date"></div>
-      <div class="navbar__time"></div>
+      <div class="navbar__weather">
+        <i class="fas fa-cloud fa-5x"></i>
+        <span id="weather-temperature"> </span>°C
+      </div>
+      <div class="navbar__date" dir="rtl">
+        <span id="miladi-date" dir="rtl"></span> |
+        <span id="solar-date" dir="rtl"></span>
+      </div>
+      <div class="navbar__time" id="current-time"></div>
     </section>
+    <!-- content -->
     <section class="content">
       <div class="content__events"></div>
       <div class="content__frame"></div>
     </section>
     <script src="./js/script.js"></script>
+    <script
+      src="https://kit.fontawesome.com/your-fontawesome-kit.js"
+      crossorigin="anonymous"
+    ></script>
   </body>
 </html>

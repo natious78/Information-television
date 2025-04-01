@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
+  // moving text bar
   const API_URL = "https://corsproxy.io/https://c.ganjoor.net/beyt-json.php";
   const textbarBox = document.getElementById("textbarBox");
   const maxRequests = 200; // Total texts to fetch
@@ -75,4 +76,122 @@ document.addEventListener("DOMContentLoaded", function () {
     clearInterval(fetchInterval);
     startFetching();
   }, 7200000);
+
+  //   weather Api
+  const weatherTemperature = document.getElementById("weather-temperature");
+  const weatherIcon = document.querySelector(".navbar__weather i");
+  const latitude = 29.5926;
+  const longitude = 52.5836;
+  const apiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=weather_code&current=temperature_2m&daily=uv_index_max&timezone=auto`;
+
+  function updateWeather() {
+    fetch(apiUrl)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        const temperature = data.current.temperature_2m;
+        const weatherCode = data.hourly.weather_code[0]; // Get the first hourly weather code
+
+        weatherTemperature.textContent = Math.round(temperature);
+        updateWeatherIcon(weatherCode);
+      })
+      .catch((error) => {
+        console.error(
+          "There has been a problem with your fetch operation:",
+          error
+        );
+        weatherTemperature.textContent = "N/A";
+      });
+  }
+
+  function updateWeatherIcon(weatherCode) {
+    // Open-Meteo weather codes to Font Awesome icons mapping
+    if (weatherCode >= 200 && weatherCode < 300) {
+      // Thunderstorm
+      weatherIcon.className = "fas fa-bolt fa-1x";
+    } else if (weatherCode >= 300 && weatherCode < 400) {
+      // Drizzle
+      weatherIcon.className = "fas fa-cloud-rain fa-1x";
+    } else if (weatherCode >= 500 && weatherCode < 600) {
+      // Rain
+      weatherIcon.className = "fas fa-cloud-showers-heavy fa-1x";
+    } else if (weatherCode >= 600 && weatherCode < 700) {
+      // Snow
+      weatherIcon.className = "fas fa-snowflake fa-1x";
+    } else if (weatherCode >= 700 && weatherCode < 800) {
+      // Atmosphere (mist, fog, etc.)
+      weatherIcon.className = "fas fa-smog fa-1x";
+    } else if (weatherCode === 0) {
+      // Clear sky
+      weatherIcon.className = "fas fa-sun fa-1x";
+    } else if (weatherCode >= 1 && weatherCode <= 3) {
+      // Mostly clear
+      weatherIcon.className = "fas fa-cloud-sun fa-1x";
+    } else if (weatherCode >= 45 && weatherCode <= 48) {
+      // Fog
+      weatherIcon.className = "fas fa-smog fa-1x";
+    } else if (weatherCode >= 51 && weatherCode <= 55) {
+      // Drizzle
+      weatherIcon.className = "fas fa-cloud-rain fa-1x";
+    } else if (weatherCode >= 56 && weatherCode <= 57) {
+      // Freezing drizzle
+      weatherIcon.className = "fas fa-snowflake fa-1x";
+    } else if (weatherCode >= 61 && weatherCode <= 65) {
+      // Rain
+      weatherIcon.className = "fas fa-cloud-showers-heavy fa-1x";
+    } else if (weatherCode >= 66 && weatherCode <= 67) {
+      // Freezing rain
+      weatherIcon.className = "fas fa-snowflake fa-1x";
+    } else if (weatherCode >= 71 && weatherCode <= 77) {
+      // Snow fall
+      weatherIcon.className = "fas fa-snowflake fa-1x";
+    } else if (weatherCode >= 80 && weatherCode <= 82) {
+      // Rain showers
+      weatherIcon.className = "fas fa-cloud-showers-heavy fa-1x";
+    } else if (weatherCode === 85 || weatherCode === 86) {
+      // Snow showers
+      weatherIcon.className = "fas fa-snowflake fa-1x";
+    } else if (weatherCode >= 95 && weatherCode <= 99) {
+      // Thunderstorm
+      weatherIcon.className = "fas fa-bolt fa-1x";
+    } else {
+      weatherIcon.className = "fas fa-cloud fa-1x"; // Default cloud icon
+    }
+  }
+
+  updateWeather();
+  setInterval(updateWeather, 600000);
+
+  // update date
+  function updateDateTime() {
+    const miladiDateElement = document.getElementById("miladi-date");
+    const now = new Date();
+    const options = {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    };
+    miladiDateElement.textContent = now.toLocaleDateString(undefined, options);
+
+    const solarDateElement = document.getElementById("solar-date");
+    solarDateElement.textContent = now.toLocaleDateString("fa-IR", options);
+  }
+
+  updateDateTime();
+  setInterval(updateDateTime, 1000);
+
+  //   update time
+  function updateTime() {
+    const timeElement = document.getElementById("current-time");
+    const now = new Date();
+    const timeString = now.toLocaleTimeString(); 
+    timeElement.textContent = timeString;
+  }
+  updateTime();
+  setInterval(updateTime, 1000);
 });
