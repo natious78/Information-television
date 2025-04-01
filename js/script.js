@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const response = await fetch(API_URL);
       const data = await response.json();
       // Build the text using m1, m2, and poet properties
-      return `${data.m1}***${data.m2}${data.poet}   ||`;
+      return `   ${data.m1}*** ${data.m2} *** ${data.poet}   ||`;
     } catch (error) {
       console.error("Error fetching text:", error);
       return "Error fetching text";

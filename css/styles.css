@@ -59,6 +59,7 @@ img {
 .moving-text {
   display: inline-block;
   padding-right: 5rem;
+  padding-left: 5rem;
 }
 
 /* navbar */
