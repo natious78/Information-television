@@ -99,9 +99,9 @@ img {
 }
 
 .navbar__date {
-  font-size: 2rem;
+  font-size: 1.75rem;
   align-items: center;
-  padding-top: 2.5rem;
+  padding-top: 2.75rem;
 }
 
 .navbar__weather i {
