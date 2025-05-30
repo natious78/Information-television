@@ -199,9 +199,74 @@ document.addEventListener("DOMContentLoaded", function () {
   async function fetchAndDisplayHolidays(year, month, day) {
     const eventsDiv = document.querySelector(".content__events");
 
+    // Function to convert Gregorian date to Jalali date
+    async function gregorianToJalali(gy, gm, gd) {
+      // Input validation
+      if (isNaN(gy) || isNaN(gm) || isNaN(gd)) {
+        return { error: "All inputs must be numbers." };
+      }
+      if (gm < 1 || gm > 12) {
+        return { error: "Month must be between 1 and 12." };
+      }
+      // Basic day validation (doesn't account for specific month lengths or leap years perfectly,
+      // but the algorithm itself will handle the core logic)
+      if (gd < 1 || gd > 31) {
+        return { error: "Day must be between 1 and 31." };
+      }
+
+      var g_d_m = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
+      var jy, jm, jd;
+
+      // Adjustments for the algorithm's base year
+      if (gy > 1600) {
+        jy = 979;
+        gy -= 1600;
+      } else {
+        jy = 0;
+        gy -= 621;
+      }
+
+      // Determine if the Gregorian year is a leap year for day calculation
+      var gy2 = gm > 2 ? gy + 1 : gy;
+
+      // Calculate the total number of days from a reference point
+      var days =
+        365 * gy +
+        Math.floor((gy2 + 3) / 4) - // Leap years
+        Math.floor((gy2 + 99) / 100) + // Centuries not divisible by 400
+        Math.floor((gy2 + 399) / 400) - // Centuries divisible by 400
+        80 +
+        gd +
+        g_d_m[gm - 1];
+
+      // Calculate Jalali year
+      jy += 33 * Math.floor(days / 12053); // 12053 days = 33 Jalali years
+      days %= 12053;
+      jy += 4 * Math.floor(days / 1461); // 1461 days = 4 Jalali years (one leap)
+      days %= 1461;
+
+      if (days > 365) {
+        jy += Math.floor((days - 1) / 365);
+        days = (days - 1) % 365;
+      }
+
+      // Calculate Jalali month and day
+      if (days < 186) {
+        // First 6 months (31 days each)
+        jm = 1 + Math.floor(days / 31);
+        jd = 1 + (days % 31);
+      } else {
+        // Next 5 months (30 days each), last month (29 or 30)
+        jm = 7 + Math.floor((days - 186) / 30);
+        jd = 1 + ((days - 186) % 30);
+      }
+
+      return { year: jy, month: jm, day: jd };
+    };
+    let jdate= await gregorianToJalali(year, month, day);
     try {
       const response = await fetch(
-        `https://corsproxy.io/https://holidayapi.ir/gregorian/${year}/${month}/${day}`
+        `https://corsproxy.io/https://holidayapi.ir/jalali/${jdate.year}/${jdate.month}/${jdate.day}`
       );
       const data = await response.json();
       console.log(data);
